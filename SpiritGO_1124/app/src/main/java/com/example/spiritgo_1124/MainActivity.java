@@ -61,7 +61,7 @@ import android.hardware.Camera.PictureCallback;
 
 
 public class MainActivity extends AppCompatActivity {
-    private static final String TAG = "CamTestActivity";
+    //private static final String TAG = "CamTestActivity";
 
     private Camera mCamera;
     private CameraPreview mPreview;

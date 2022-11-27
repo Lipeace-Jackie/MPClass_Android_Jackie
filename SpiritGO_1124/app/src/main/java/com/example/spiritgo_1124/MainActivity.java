@@ -59,7 +59,7 @@ import android.widget.*;
 import android.widget.FrameLayout;
 import android.hardware.Camera.PictureCallback;
 
-
+// test 1128_3
 public class MainActivity extends AppCompatActivity {
     //private static final String TAG = "CamTestActivity";
 

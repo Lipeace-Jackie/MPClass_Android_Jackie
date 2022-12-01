@@ -13,65 +13,34 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.example.spiritgo_1124.databinding.ActivityMainBinding;
-
-//public class MainActivity extends AppCompatActivity {
-//
-//    // Used to load the 'spiritgo_1124' library on application startup.
-//    static {
-//        System.loadLibrary("spiritgo_1124");
-//    }
-//
-//    private ActivityMainBinding binding;
-//
-//    @Override
-//    protected void onCreate(Bundle savedInstanceState) {
-//        super.onCreate(savedInstanceState);
-//
-//        binding = ActivityMainBinding.inflate(getLayoutInflater());
-//        setContentView(binding.getRoot());
-//
-//        // Example of a call to a native method
-//        //TextView tv = binding.sampleText;
-//        //tv.setText(stringFromJNI());
-//    }
-//
-//    /**
-//     * A native method that is implemented by the 'spiritgo_1124' native library,
-//     * which is packaged with this application.
-//     */
-//    public native String stringFromJNI();
-//}
-
-
-import androidx.appcompat.app.AppCompatActivity;
-
-import android.app.Activity;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Matrix;
-import android.hardware.Camera;
-import android.os.Bundle;
-import android.view.Surface;
-import android.view.View;
-import android.widget.*;
-import android.widget.FrameLayout;
-import android.hardware.Camera.PictureCallback;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 
 // test 1128_3
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements ButtonListener {
     //private static final String TAG = "CamTestActivity";
 
     private Camera mCamera;
     private CameraPreview mPreview;
     private ImageView capturedImageHolder;
 
+    TextView tv;
+    String str="";
+
+    ButtonDriver mButtonDriver;
+    boolean mThreadRun=true;
+
+    LEDDriver mLedDriver;
+    int mLedCount;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //// camera ////
         Button btn = (Button) findViewById(R.id.button_catch);
         //capturedImageHolder = (ImageView) findViewById(R.id.captured_img);
         //Create an instance of Camera
@@ -88,6 +57,18 @@ public class MainActivity extends AppCompatActivity {
                 mCamera.takePicture(null, null, pictureCallback);
             }
         });
+
+        //// button ////
+        tv = (TextView) findViewById(R.id.txt);
+
+        mButtonDriver = new ButtonDriver();
+        mButtonDriver.setListener(this);
+        if(mButtonDriver.open("/dev/sm9s5422_interrupt")<0){
+            Toast.makeText(MainActivity.this,"Driver Open Failed", Toast.LENGTH_SHORT).show();
+        }
+
+        //// LED ////
+        mLedDriver = new LEDDriver();
     }
 
     /**
@@ -133,6 +114,8 @@ public class MainActivity extends AppCompatActivity {
         super.onPause();
         releaseMediaRecorder(); // if you are using MediaRecorder, release it first
         releaseCamera(); // release the camera immediately on pause event
+        mButtonDriver.close();
+        mLedDriver.close();
     }
 
     private void releaseMediaRecorder() {
@@ -145,5 +128,51 @@ public class MainActivity extends AppCompatActivity {
             mCamera = null;
         }
     }
+
+    public Handler handler = new Handler((Looper.getMainLooper())){
+        public void handleMessage(Message msg)  {
+            switch(msg.arg1){
+                case 1:
+                    tv.setText("Up");
+                    break;
+                case 2:
+                    tv.setText("Down");
+                    break;
+                case 3:
+                    tv.setText("Left");
+                    break;
+                case 4:
+                    tv.setText("Right");
+                    break;
+                case 5:
+                    tv.setText("Center");
+                    mLedCount ++;
+                    break;
+            }
+        }
+    };
+
+    @Override
+    protected void onResume(){
+        mButtonDriver = new ButtonDriver();
+        mButtonDriver.setListener(this);
+        if(mButtonDriver.open("/dev/sm9s5422_interrupt")<0){
+            Toast.makeText(MainActivity.this,"ButtonDriver Open Failed", Toast.LENGTH_SHORT).show();
+        }
+
+        mLedDriver = new LEDDriver();
+        if(mLedDriver.open("/dev/sm9s5422_led")<0){
+            Toast.makeText(MainActivity.this, "LEDDriver Open Failed", Toast.LENGTH_SHORT).show();
+        }
+        super.onResume();
+    }
+
+    @Override
+    public void onReceive(int val){
+        Message text = Message.obtain();
+        text.arg1=val;
+        handler.sendMessage(text);
+    }
+
 }
 

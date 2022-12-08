@@ -17,7 +17,14 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 
-// test 1128_3
+import org.opencv.android.OpenCVLoader;
+import org.opencv.android.Utils;
+import org.opencv.core.Core;
+import org.opencv.core.Mat;
+import org.opencv.core.Scalar;
+import org.opencv.imgproc.Imgproc;
+
+
 public class MainActivity extends AppCompatActivity implements ButtonListener {
     //private static final String TAG = "CamTestActivity";
 
@@ -32,8 +39,14 @@ public class MainActivity extends AppCompatActivity implements ButtonListener {
     boolean mThreadRun=true;
 
     LEDDriver mLedDriver;
-    int mLedCount;
+    int mLedCount = 8;
 
+    SegmentDriver mSegmentDriver;
+    boolean mSegThreadRun;
+    SegmentThread mSegThread;
+    int mSegCount;
+
+    float mLedPushed;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,6 +82,20 @@ public class MainActivity extends AppCompatActivity implements ButtonListener {
 
         //// LED ////
         mLedDriver = new LEDDriver();
+        if(mLedDriver.open("/dev/sm9s5422_led")<0){
+            Toast.makeText(MainActivity.this, "LEDDriver Open Failed", Toast.LENGTH_SHORT).show();
+        }
+        mLedDriver.write(mLedCount);
+        // 버튼 클릭시 onChanged 필요한가?
+
+        //// segment ////
+        mSegmentDriver = new SegmentDriver();
+        if(mSegmentDriver.open("/dev/sm9s5422_segment")<0){
+            Toast.makeText(MainActivity.this,"Driver Open Failed", Toast.LENGTH_SHORT).show();
+        }
+        //mSegmentDriver.write(0);
+
+        // 정령 잡을 때 점수 write하기 추가해야
     }
 
     /**
@@ -97,6 +124,12 @@ public class MainActivity extends AppCompatActivity implements ButtonListener {
             Bitmap rotatedBitmap = Bitmap.createBitmap(bitmap, 0, 0, w, h, mtx, true);
 
 
+
+//            Imgproc.cvtColor(InputFrame.rgba(),  , Imgproc.COLOR_RGB2HSV);
+//            Core.inRange(candies, new Scalar(0, 0, 0), new Scalar(0, 0, 32), dst)
+//            //dst를 최종적으로 비트맵으로 변환하여 ImageView에 나타냄
+//            binding.dst.setImageBitmap(bitmapUtil.bitmapFrom(dst))
+
             if (bitmap == null) {
                 Toast.makeText(MainActivity.this, "Capture image is empty", Toast.LENGTH_LONG).show();
             }
@@ -104,19 +137,27 @@ public class MainActivity extends AppCompatActivity implements ButtonListener {
         }
     };
 
+//    Camera.PictureCallback pictureCallback = new Camera.PictureCallback() {
+//        @Override
+//        public void onPictureTaken(byte[] data, Camera camera) {
+//            camera.stopPreview();
+//            // img processing ...
+//            FlagState fs = ImageProcessing.getResult(data);
+//
+//            // UI processing ...
+//
+//
+//            camera.startPreview();
+//
+//        }
+//    };
+
     private Bitmap scaleDownBitmapImage(Bitmap bitmap, int newWidth, int newHeight) {
         Bitmap resizedBitmap = Bitmap.createScaledBitmap(bitmap, newWidth, newHeight, true);
         return resizedBitmap;
     }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        releaseMediaRecorder(); // if you are using MediaRecorder, release it first
-        releaseCamera(); // release the camera immediately on pause event
-        mButtonDriver.close();
-        mLedDriver.close();
-    }
+
 
     private void releaseMediaRecorder() {
         mCamera.lock(); // lock camera for later use
@@ -134,23 +175,58 @@ public class MainActivity extends AppCompatActivity implements ButtonListener {
             switch(msg.arg1){
                 case 1:
                     tv.setText("Up");
+                    mSegCount = 111;
                     break;
                 case 2:
                     tv.setText("Down");
+                    mSegCount = 222;
                     break;
                 case 3:
                     tv.setText("Left");
+                    mSegCount = 333;
                     break;
                 case 4:
                     tv.setText("Right");
+                    mSegCount = 980722;
                     break;
                 case 5:
                     tv.setText("Center");
-                    mLedCount ++;
+
+                    // 중복 입력 방지
+                    float now = (float) System.nanoTime()/1_000_000L;
+                    if ( now - mLedPushed > 200 ){
+                        mLedCount --;
+                        mLedPushed = (float) System.nanoTime()/1_000_000L;
+                    }
+                    mLedDriver.write(mLedCount);
                     break;
             }
         }
     };
+
+    private class SegmentThread extends Thread{
+        @Override
+        public void run(){
+            super.run();
+            while(mThreadRun){
+                mSegmentDriver.write(mSegCount);
+
+            }
+        }
+    }
+
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        releaseMediaRecorder(); // if you are using MediaRecorder, release it first
+        releaseCamera(); // release the camera immediately on pause event
+        mButtonDriver.close();
+        mLedDriver.close();
+        mSegThreadRun = false;
+        mSegThread = null;
+        mSegmentDriver.close();
+    }
 
     @Override
     protected void onResume(){
@@ -164,7 +240,20 @@ public class MainActivity extends AppCompatActivity implements ButtonListener {
         if(mLedDriver.open("/dev/sm9s5422_led")<0){
             Toast.makeText(MainActivity.this, "LEDDriver Open Failed", Toast.LENGTH_SHORT).show();
         }
+        mLedDriver.write(mLedCount);
+
+        mSegCount = 0;
+        mSegmentDriver = new SegmentDriver();
+        if(mSegmentDriver.open("/dev/sm9s5422_segment")<0){
+            Toast.makeText(MainActivity.this,"Driver Open Failed", Toast.LENGTH_SHORT).show();
+        }
+        mSegThreadRun = true;
+        mSegThread = new SegmentThread();
+        mSegThread.start();
+
         super.onResume();
+
+
     }
 
     @Override

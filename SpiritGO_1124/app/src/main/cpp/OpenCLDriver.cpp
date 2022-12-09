@@ -36,9 +36,10 @@ int release_bitmap(JNIEnv *env, jobject bitmap, unsigned char *tempPixels);
 size_t calc_global_size(int total_size, int local_size);
 unsigned char* get_uchar_array(JNIEnv*env, jbyteArray ranges);
 
+
 extern "C"
 JNIEXPORT jint JNICALL
-Java_com_example_spiritgo_11124_OpenCLDriver_rgb2hsv(JNIEnv *env, jobject thiz, jobject bitmap) {
+Java_com_example_spiritgo_11124_ImageDriver_rgb2hsv(JNIEnv *env, jobject thiz, jobject bitmap) {
 
     AndroidBitmapInfo info;
     unsigned char *ret_img, *orig_img;
@@ -90,7 +91,7 @@ Java_com_example_spiritgo_11124_OpenCLDriver_rgb2hsv(JNIEnv *env, jobject thiz, 
 }
 extern "C"
 JNIEXPORT jint JNICALL
-Java_com_mp_jaesun_1final_helper_MyBitmap_inRange(JNIEnv *env, jobject thiz, jobject bitmap,
+Java_com_example_spiritgo_11124_ImageDriver_inRange(JNIEnv *env, jobject thiz, jobject bitmap,
                                                   jbyteArray ranges) {
     // translate input arguments (bitmap, ranges)
     unsigned char color_range[6]={0};

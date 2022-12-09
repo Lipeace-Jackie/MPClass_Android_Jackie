@@ -1,20 +1,20 @@
 package com.example.spiritgo_1124;
 
-        import android.graphics.Bitmap;
-        import android.graphics.BitmapFactory;
-        import android.graphics.Matrix;
-        import android.util.Log;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.util.Log;
 
-        import java.nio.ByteBuffer;
+import java.nio.ByteBuffer;
 
-public class ImageProcessing {
-    static {
-        System.loadLibrary("image");
-    }
-
-    public static native int rgb2hsv(Bitmap bitmap);
-
-    public static native int inRange(Bitmap bitmap, byte[] ranges);
+public class ImageDriver {
+//    static {
+//        System.loadLibrary("OpenCLDriver");
+//    }
+//
+//    public static native int rgb2hsv(Bitmap bitmap);
+//
+//    public static native int inRange(Bitmap bitmap, byte[] ranges);
 
     private static Matrix mtx_180;
 
@@ -53,7 +53,7 @@ public class ImageProcessing {
     public static byte[] getHsvRange(Bitmap img) { // cropped img
         final int[] MARGIN = {12, 18, 30}; // H,S,V
         final int MASK = 0x00_00_00_FF;
-        rgb2hsv(img);
+//        rgb2hsv(img);
         int[] ranges = {255, -255, 255, 0, 255, 0};
         int sum = 0;
         int w = img.getWidth(), h = img.getHeight();
@@ -124,25 +124,25 @@ public class ImageProcessing {
         return sb.toString();
     }
 
-    public static FlagState getResult(byte[] data) {
-        Bitmap img = MyBitmap.getImage(data);
-        int w = img.getWidth(), h = img.getHeight();
-        img = Bitmap.createScaledBitmap(img, w / 4, h / 4, true);
-
-
-        MyBitmap.rgb2hsv(img); // hsv
-        Bitmap redTh = img;
-        Bitmap greenTh = img.copy(img.getConfig(), true);
-
-        MyBitmap.inRange(redTh, MyBitmap.redRange);
-        boolean redUp = MyBitmap.isUp(redTh);
-        redTh = img = null;
-
-        MyBitmap.inRange(greenTh, MyBitmap.greenRange);
-        boolean greenUp = MyBitmap.isUp(greenTh);
-        greenTh = null;
-
-        return new FlagState(redUp, greenUp);
-    }
+//    public static FlagState getResult(byte[] data) {
+//        Bitmap img = ImageDriver.getImage(data);
+//        int w = img.getWidth(), h = img.getHeight();
+//        img = Bitmap.createScaledBitmap(img, w / 4, h / 4, true);
+//
+//
+//        ImageDriver.rgb2hsv(img); // hsv
+//        Bitmap redTh = img;
+//        Bitmap greenTh = img.copy(img.getConfig(), true);
+//
+//        ImageDriver.inRange(redTh, ImageDriver.redRange);
+//        boolean redUp = ImageDriver.isUp(redTh);
+//        redTh = img = null;
+//
+//        ImageDriver.inRange(greenTh, ImageDriver.greenRange);
+//        boolean greenUp = ImageDriver.isUp(greenTh);
+//        greenTh = null;
+//
+//        return new FlagState(redUp, greenUp);
+//    }
 
 }

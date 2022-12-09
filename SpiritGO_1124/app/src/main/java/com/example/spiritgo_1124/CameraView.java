@@ -8,15 +8,16 @@ package com.example.spiritgo_1124;
         import android.widget.ImageView;
 
         import java.io.IOException;
+        import android.hardware.Camera;
 
-public class CameraDriver {
+public class CameraView {
 
     private Camera camera;
     private CameraPreview preview;
     private FrameLayout imgView;
     private ImageView capturedView;
 
-    public CameraDriver(Context context, FrameLayout imgView, ImageView capturedView) {
+    public CameraView(Context context, FrameLayout imgView) {
         this.imgView = imgView;
         this.capturedView = capturedView;
         open(context);

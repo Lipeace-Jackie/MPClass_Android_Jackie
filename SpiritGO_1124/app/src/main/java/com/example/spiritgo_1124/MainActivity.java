@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity implements ButtonListener {
         //Create our Preview view and set is as the content of our activity
 
         preview = (FrameLayout) findViewById(R.id.camera_preview);
-        cameraView = new CameraView(this, preview);
+        cameraView = new CameraView(this, preview, null);
 
         cameraView.pictureCallback = new Camera.PictureCallback() {
             @Override

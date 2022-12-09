@@ -5,16 +5,20 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.util.Log;
 
+import org.opencv.android.Utils;
+import org.opencv.core.Mat;
+import org.opencv.imgproc.Imgproc;
+
 import java.nio.ByteBuffer;
 
 public class ImageDriver {
-//    static {
-//        System.loadLibrary("OpenCLDriver");
-//    }
-//
-//    public static native int rgb2hsv(Bitmap bitmap);
-//
-//    public static native int inRange(Bitmap bitmap, byte[] ranges);
+    static {
+        System.loadLibrary("OpenCLDriver");
+    }
+
+    public static native int rgb2hsv(Bitmap bitmap);
+
+    public static native int inRange(Bitmap bitmap, byte[] ranges);
 
     private static Matrix mtx_180;
 
@@ -53,7 +57,7 @@ public class ImageDriver {
     public static byte[] getHsvRange(Bitmap img) { // cropped img
         final int[] MARGIN = {12, 18, 30}; // H,S,V
         final int MASK = 0x00_00_00_FF;
-//        rgb2hsv(img);
+        rgb2hsv(img);
         int[] ranges = {255, -255, 255, 0, 255, 0};
         int sum = 0;
         int w = img.getWidth(), h = img.getHeight();
@@ -124,25 +128,34 @@ public class ImageDriver {
         return sb.toString();
     }
 
-//    public static FlagState getResult(byte[] data) {
-//        Bitmap img = ImageDriver.getImage(data);
-//        int w = img.getWidth(), h = img.getHeight();
-//        img = Bitmap.createScaledBitmap(img, w / 4, h / 4, true);
-//
-//
-//        ImageDriver.rgb2hsv(img); // hsv
-//        Bitmap redTh = img;
-//        Bitmap greenTh = img.copy(img.getConfig(), true);
-//
-//        ImageDriver.inRange(redTh, ImageDriver.redRange);
-//        boolean redUp = ImageDriver.isUp(redTh);
-//        redTh = img = null;
-//
-//        ImageDriver.inRange(greenTh, ImageDriver.greenRange);
-//        boolean greenUp = ImageDriver.isUp(greenTh);
-//        greenTh = null;
-//
-//        return new FlagState(redUp, greenUp);
-//    }
+    public static void getResult(byte[] data) {
+        Bitmap img = ImageDriver.getImage(data);
+        int w = img.getWidth(), h = img.getHeight();
+        img = Bitmap.createScaledBitmap(img, w / 4, h / 4, true);
+
+        Mat mat = new Mat();
+        Utils.bitmapToMat(img, mat);
+        Mat mat_hsv = new Mat();
+        //ImageDriver.rgb2hsv(img); // hsv
+        Imgproc.cvtColor(mat, mat_hsv, Imgproc.COLOR_RGB2HSV);
+
+        for(int i = 0; i <= 5; i++) {
+            Bitmap img_hsv = img.copy(img.getConfig(), true);
+            Utils.matToBitmap(mat_hsv, img_hsv);
+            ImageDriver.inRange(img_hsv, Spirit.hsvRange(0));
+
+
+        }
+
+
+        boolean redUp = ImageDriver.isUp(redTh);
+        redTh = img = null;
+
+        ImageDriver.inRange(greenTh, ImageDriver.greenRange);
+        boolean greenUp = ImageDriver.isUp(greenTh);
+        greenTh = null;
+
+        return new FlagState(redUp, greenUp);
+    }
 
 }

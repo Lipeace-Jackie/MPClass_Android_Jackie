@@ -101,7 +101,7 @@ Java_com_example_spiritgo_11124_ImageDriver_inRange(JNIEnv *env, jobject thiz, j
     AndroidBitmapInfo info;
     unsigned char *ret_img, *orig_img;
     const char *kernel_name = "kernel_in_range_";
-    const char* kernel_file_name = "/data/local/tmp/threshold.c";
+    const char* kernel_file_name = "/data/local/tmp/decision.c";
     size_t kernel_file_size;
     char *kernel_file_buffer;
     int ret;

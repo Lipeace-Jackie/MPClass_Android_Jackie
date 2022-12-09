@@ -1,14 +1,14 @@
 package com.example.spiritgo_1124;
 
-        import android.content.Context;
-        import android.util.Log;
-        import android.view.SurfaceHolder;
-        import android.view.SurfaceView;
-        import android.widget.FrameLayout;
-        import android.widget.ImageView;
+import android.content.Context;
+import android.util.Log;
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
 
-        import java.io.IOException;
-        import android.hardware.Camera;
+import java.io.IOException;
+import android.hardware.Camera;
 
 public class CameraView {
 
@@ -17,7 +17,7 @@ public class CameraView {
     private FrameLayout imgView;
     private ImageView capturedView;
 
-    public CameraView(Context context, FrameLayout imgView) {
+    public CameraView(Context context, FrameLayout imgView, ImageView capturedView) {
         this.imgView = imgView;
         this.capturedView = capturedView;
         open(context);

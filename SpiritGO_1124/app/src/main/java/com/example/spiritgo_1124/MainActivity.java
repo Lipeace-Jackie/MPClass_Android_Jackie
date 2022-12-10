@@ -1,5 +1,7 @@
 package com.example.spiritgo_1124;
 
+import static androidx.constraintlayout.helper.widget.MotionEffect.TAG;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.graphics.Bitmap;
@@ -7,6 +9,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.hardware.Camera;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
@@ -16,8 +19,14 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 
+import org.opencv.android.OpenCVLoader;
+
+
 
 public class MainActivity extends AppCompatActivity implements ButtonListener {
+
+
+
     //private static final String TAG = "CamTestActivity";
 
 //    private Camera mCamera;
@@ -45,7 +54,18 @@ public class MainActivity extends AppCompatActivity implements ButtonListener {
 
     float mLedPushed;
 
+    CameraThread mCameraThread;
     public int mAverage;
+
+    static{
+        if(!OpenCVLoader.initDebug()) {
+            Log.d(TAG, "OpenCV is not loaded!");
+        }
+        else{
+            Log.d(TAG, "OpenCV is loaded successfully!");
+
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,7 +76,7 @@ public class MainActivity extends AppCompatActivity implements ButtonListener {
         Button btn = (Button) findViewById(R.id.button_catch);
         //Create an instance of Camera
         //Create our Preview view and set is as the content of our activity
-
+        //OpenCVLoader.initDebug();
         preview = (FrameLayout) findViewById(R.id.camera_preview);
         cameraView = new CameraView(this, preview, null);
 
@@ -72,13 +92,15 @@ public class MainActivity extends AppCompatActivity implements ButtonListener {
                 camera.startPreview();
             }
         };
+        //mCameraThread = new CameraThread();
+        //mCameraThread.start();
 
-//        btn.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                mCamera.takePicture(null, null, pictureCallback);
-//            }
-//        });
+        btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                cameraView.takePicture();
+            }
+        });
 
         //// button ////
         tv = (TextView) findViewById(R.id.txt);
@@ -191,6 +213,21 @@ public class MainActivity extends AppCompatActivity implements ButtonListener {
         }
     }
 
+    private class CameraThread extends Thread{
+        @Override
+        public void run(){
+            super.run();
+            while(mThreadRun){
+                cameraView.takePicture();
+                try {
+                    Thread.sleep(10000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        }
+    }
 
     @Override
     protected void onPause() {

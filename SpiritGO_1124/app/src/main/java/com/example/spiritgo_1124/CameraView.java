@@ -53,6 +53,7 @@ public class CameraView {
     public Camera.PictureCallback pictureCallback = new Camera.PictureCallback() {
         @Override
         public void onPictureTaken(byte[] data, Camera camera) {
+
         }
     };
 

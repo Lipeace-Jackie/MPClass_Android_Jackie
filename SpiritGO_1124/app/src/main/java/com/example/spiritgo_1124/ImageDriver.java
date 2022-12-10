@@ -175,5 +175,4 @@ public class ImageDriver {
 //
 //        return new FlagState(redUp, greenUp);
     }
-
 }

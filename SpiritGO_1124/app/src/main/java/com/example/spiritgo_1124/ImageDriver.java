@@ -1,5 +1,7 @@
 package com.example.spiritgo_1124;
 
+import static org.opencv.core.Core.mean;
+
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
@@ -7,6 +9,7 @@ import android.util.Log;
 
 import org.opencv.android.Utils;
 import org.opencv.core.Mat;
+import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 
 import java.nio.ByteBuffer;
@@ -139,23 +142,31 @@ public class ImageDriver {
         //ImageDriver.rgb2hsv(img); // hsv
         Imgproc.cvtColor(mat, mat_hsv, Imgproc.COLOR_RGB2HSV);
 
-        for(int i = 0; i <= 5; i++) {
+        byte[] hsvRange = {55, 121, 0, 127, 0, 127};
+
+        for(int i = 0; i < 5; i++) {
             Bitmap img_hsv = img.copy(img.getConfig(), true);
             Utils.matToBitmap(mat_hsv, img_hsv);
-            ImageDriver.inRange(img_hsv, Spirit.hsvRange(0));
+            ImageDriver.inRange(img_hsv, hsvRange);
+
+            Mat mat_th = new Mat();
+            Utils.bitmapToMat(img_hsv, mat_th);
+            Scalar average = mean(mat_th);
+
+
 
 
         }
 
 
-        boolean redUp = ImageDriver.isUp(redTh);
-        redTh = img = null;
-
-        ImageDriver.inRange(greenTh, ImageDriver.greenRange);
-        boolean greenUp = ImageDriver.isUp(greenTh);
-        greenTh = null;
-
-        return new FlagState(redUp, greenUp);
+//        boolean redUp = ImageDriver.isUp(redTh);
+//        redTh = img = null;
+//
+//        ImageDriver.inRange(greenTh, ImageDriver.greenRange);
+//        boolean greenUp = ImageDriver.isUp(greenTh);
+//        greenTh = null;
+//
+//        return new FlagState(redUp, greenUp);
     }
 
 }

@@ -4,11 +4,16 @@ import static androidx.constraintlayout.helper.widget.MotionEffect.TAG;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Matrix;
+import android.graphics.Paint;
 import android.hardware.Camera;
 import android.os.Bundle;
+import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -21,6 +26,14 @@ import android.os.Message;
 
 import org.opencv.android.OpenCVLoader;
 
+import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.os.Bundle;
+import android.util.AttributeSet;
+import android.view.View;
+import android.widget.Button;
 
 
 public class MainActivity extends AppCompatActivity implements ButtonListener {
@@ -127,7 +140,7 @@ public class MainActivity extends AppCompatActivity implements ButtonListener {
         }
         //mSegmentDriver.write(0);
 
-        MyView mv = (MyView)findViewById(R.id.catcher);
+        //MyView mv = (MyView)findViewById(R.id.mv);
         // 정령 잡을 때 점수 write하기 추가해야
     }
 
@@ -227,6 +240,28 @@ public class MainActivity extends AppCompatActivity implements ButtonListener {
                 }
 
             }
+        }
+    }
+
+    class MyView extends View{
+        //생성자에 인수를 세개 준다. 생성자를 세개 다 만들어줘야한다. 생성자들앞에 public붙여야함
+        public MyView(Context context){
+            super(context);
+        }
+        public MyView(Context context, AttributeSet att){
+            super(context,att);
+        }
+        public MyView(Context context,AttributeSet att, int a){
+            super(context,att,a);
+        }
+
+        //사각형 좌표값의 값을 변수로 설정!
+        int x1=100,y1=100,x2=300,y2=300;
+        @Override //부모가 가진 onDraw와 오버라이딩
+        public void onDraw(Canvas c){
+            Paint paint= new Paint();
+            paint.setColor(Color.DKGRAY);
+            c.drawRect(x1, y1, x2, y2, paint);
         }
     }
 

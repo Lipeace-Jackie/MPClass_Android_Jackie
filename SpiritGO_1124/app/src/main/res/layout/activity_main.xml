@@ -115,12 +115,6 @@ tools:context=".MainActivity">
             android:orientation="horizontal">
 
         </LinearLayout>
-            <com.example.spiritgo_1124.MyView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/et"
-            android:background="#fffaa0"
-            />
             <ImageView
                 android:id="@+id/catcher"
                 android:layout_width="200dp"

@@ -29,7 +29,7 @@ public class MainActivity extends AppCompatActivity implements ButtonListener {
     CameraView cameraView;
     // 카메라 붙이는 중이었음
 
-    TextView tv;
+    TextView tv, tv2;
     String str="";
 
     ButtonDriver mButtonDriver;
@@ -44,6 +44,8 @@ public class MainActivity extends AppCompatActivity implements ButtonListener {
     int mSegCount;
 
     float mLedPushed;
+
+    public int mAverage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,8 +66,9 @@ public class MainActivity extends AppCompatActivity implements ButtonListener {
                 camera.stopPreview();
 
                 //할거 들어가기
-//                FlagState fs = MyBitmap.getResult(data);
-//                setFlagText(fs.redUp, fs.greenUp);
+
+                int[] num = ImageDriver.getResult(data);
+                tv2.setText(num[0]);
                 camera.startPreview();
             }
         };
@@ -79,6 +82,7 @@ public class MainActivity extends AppCompatActivity implements ButtonListener {
 
         //// button ////
         tv = (TextView) findViewById(R.id.txt);
+        tv2 = (TextView) findViewById(R.id.tvName);
 
         mButtonDriver = new ButtonDriver();
         mButtonDriver.setListener(this);

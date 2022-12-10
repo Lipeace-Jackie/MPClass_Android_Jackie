@@ -5,6 +5,7 @@ import static org.opencv.core.Core.mean;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
+import android.media.Image;
 import android.util.Log;
 
 import org.opencv.android.Utils;
@@ -30,6 +31,7 @@ public class ImageDriver {
     public static boolean isCaliAvailable() {
         return redRange != null && greenRange != null;
     }
+
 
     public static Bitmap getImage(byte[] data) {
         if (mtx_180 == null) {
@@ -131,7 +133,7 @@ public class ImageDriver {
         return sb.toString();
     }
 
-    public static void getResult(byte[] data) {
+    public static int[] getResult(byte[] data) {
         Bitmap img = ImageDriver.getImage(data);
         int w = img.getWidth(), h = img.getHeight();
         img = Bitmap.createScaledBitmap(img, w / 4, h / 4, true);
@@ -143,6 +145,7 @@ public class ImageDriver {
         Imgproc.cvtColor(mat, mat_hsv, Imgproc.COLOR_RGB2HSV);
 
         byte[] hsvRange = {55, 121, 0, 127, 0, 127};
+        int[] average = {0, 0, 0, 0, 0};
 
         for(int i = 0; i < 5; i++) {
             Bitmap img_hsv = img.copy(img.getConfig(), true);
@@ -151,12 +154,16 @@ public class ImageDriver {
 
             Mat mat_th = new Mat();
             Utils.bitmapToMat(img_hsv, mat_th);
-            Scalar average = mean(mat_th);
+            Scalar avg = mean(mat_th);
+
+            average[i] = (int) avg.val[0];
 
 
 
 
         }
+
+        return average;
 
 
 //        boolean redUp = ImageDriver.isUp(redTh);

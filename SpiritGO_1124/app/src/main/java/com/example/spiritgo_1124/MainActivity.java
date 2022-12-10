@@ -127,6 +127,7 @@ public class MainActivity extends AppCompatActivity implements ButtonListener {
         }
         //mSegmentDriver.write(0);
 
+        MyView mv = (MyView)findViewById(R.id.catcher);
         // 정령 잡을 때 점수 write하기 추가해야
     }
 

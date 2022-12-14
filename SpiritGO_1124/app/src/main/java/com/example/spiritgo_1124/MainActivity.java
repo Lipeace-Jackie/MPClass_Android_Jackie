@@ -1,6 +1,6 @@
 package com.example.spiritgo_1124;
 
-import static androidx.constraintlayout.helper.widget.MotionEffect.TAG;
+
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -18,6 +18,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.os.Handler;
@@ -26,21 +27,16 @@ import android.os.Message;
 
 import org.opencv.android.OpenCVLoader;
 
-import android.content.Context;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.os.Bundle;
-import android.util.AttributeSet;
-import android.view.View;
-import android.widget.Button;
+import java.io.IOException;
+
+
 
 
 public class MainActivity extends AppCompatActivity implements ButtonListener {
 
 
 
-    //private static final String TAG = "CamTestActivity";
+    private static final String TAG = "CamTestActivity";
 
 //    private Camera mCamera;
 //    private CameraPreview mPreview;
@@ -67,7 +63,7 @@ public class MainActivity extends AppCompatActivity implements ButtonListener {
 
     float mLedPushed;
 
-    CameraThread mCameraThread;
+    //CameraThread mCameraThread;
     public int mAverage;
 
     static{
@@ -227,21 +223,6 @@ public class MainActivity extends AppCompatActivity implements ButtonListener {
         }
     }
 
-    private class CameraThread extends Thread{
-        @Override
-        public void run(){
-            super.run();
-            while(mThreadRun){
-                cameraView.takePicture();
-                try {
-                    Thread.sleep(10000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-
-            }
-        }
-    }
 
     class MyView extends View{
         //생성자에 인수를 세개 준다. 생성자를 세개 다 만들어줘야한다. 생성자들앞에 public붙여야함

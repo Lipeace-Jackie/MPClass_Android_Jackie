@@ -132,7 +132,12 @@ tools:context=".MainActivity">
 
 
     </RelativeLayout>
-
+<ImageView
+    android:id="@+id/imageView"
+    android:layout_width="200dp"
+    android:layout_height="150dp"
+    tools:layout_editor_absoluteX="-1dp"
+    tools:layout_editor_absoluteY="70dp" />
 
 <TextView
     android:id="@+id/txt"
